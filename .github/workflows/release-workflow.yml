@@ -1,0 +1,42 @@
+name: Release
+
+on:
+  workflow_call:
+    inputs:
+      sdkVersion:
+        required: true
+        type: string
+      releaseTag:
+        required: true
+        type: string
+
+jobs:
+  build:
+    uses: danpowell88/OpenRVS/.github/workflows/compile-workflow.yml@master
+    with:
+      sdkVersion: ${{ inputs.sdkVersion }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: output
+      - name: Delete all assets from the release
+        uses: mknejp/delete-release-assets@v1
+        with:
+          tag: ${{ inputs.releaseTag }}
+          assets: "*"
+          token: ${{ secrets.GITHUB_TOKEN }}          
+          fail-if-no-release: false
+          fail-if-no-assets: false
+      - name: Create or update GitHub Release and upload assets
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ inputs.releaseTag }}
+          name: ${{ inputs.releaseTag }}
+          files: output/**/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
