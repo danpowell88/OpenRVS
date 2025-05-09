@@ -1,0 +1,19 @@
+name: Release SDK
+
+on:
+  workflow_dispatch:
+    inputs:
+      releaseTag:
+        description: 'Release tag to use'
+        required: true        
+
+jobs:
+  release:
+    name: Release SDK ${{ matrix.sdkVersion }}
+    strategy:
+      matrix:
+        sdkVersion: [ '1.6' ]
+    uses: danpowell88/OpenRVS/.github/workflows/release-workflow.yml@master
+    with:
+      sdkVersion: ${{ matrix.sdkVersion }}
+      releaseTag: ${{ github.event.inputs.releaseTag }}

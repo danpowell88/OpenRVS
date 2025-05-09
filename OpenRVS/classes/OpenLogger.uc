@@ -31,7 +31,7 @@ static function Info(string s, optional Object o)
 static function Debug(string s, optional Object o)
 {
 	local bool debugMode;
-	debugMode = false;//WARNING: Set to false before building releases for users!
+	debugMode = true;//WARNING: Set to false before building releases for users!
 	if (debugMode)
 		writeMsg(s, LOG_LEVEL_DEBUG, o);
 }
