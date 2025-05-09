@@ -1,0 +1,20 @@
+name: Compile SDK
+
+on:
+  push: 
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  compile:
+    name: Compile SDK ${{ matrix.sdkVersion }}
+    strategy:
+      matrix:
+        sdkVersion: [ '1.6' ]
+    uses: danpowell88/OpenRVS/.github/workflows/compile-workflow.yml@master
+    with:
+      sdkVersion: ${{ matrix.sdkVersion }}

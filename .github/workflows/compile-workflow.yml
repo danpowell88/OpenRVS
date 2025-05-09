@@ -1,0 +1,82 @@
+name: Compile Workflow
+
+on:
+  workflow_call:
+    inputs:
+      sdkVersion:
+        description: 'SDK version to use'
+        required: false
+        type: string
+
+jobs:
+  compile-openrvs-release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sed -i 's/debugMode\s*=\s*[a-zA-Z]\+/debugMode = false/' OpenRVS/classes/OpenLogger.uc
+        shell: bash        
+      - uses: danpowell88/ravenshield-sdk@master
+        with:
+          projectName: 'OpenRVS'
+          projectPath: './OpenRVS'
+          strip: 'true'
+          sdkVersion: ${{ inputs.sdkVersion }}        
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'OpenRVS-release'
+          path: 'workspace/output/*'
+  compile-openrvs-debug:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sed -i 's/debugMode\s*=\s*[a-zA-Z]\+/debugMode = true/' OpenRVS/classes/OpenLogger.uc
+        shell: bash   
+      - uses: danpowell88/ravenshield-sdk@master
+        with:
+          projectName: 'OpenRVS'
+          projectPath: './OpenRVS'
+          strip: 'true'
+          sdkVersion: ${{ inputs.sdkVersion }}          
+      - run: mv workspace/output/OpenRVS.u workspace/output/OpenRVS-Debug.u
+        shell: bash               
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'OpenRVS-debug'
+          path: 'workspace/output/*'
+  compile-openrenderfix-release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sed -i 's/debugMode\s*=\s*[a-zA-Z]\+/debugMode = false/' OpenRVS/classes/OpenLogger.uc
+        shell: bash        
+      - uses: danpowell88/ravenshield-sdk@master
+        with:
+          projectName: 'OpenRenderFix'
+          projectPath: './OpenRenderFix'
+          strip: 'true'
+          sdkVersion: ${{ inputs.sdkVersion }}
+      - run: mv workspace/output/OpenRenderFix.u workspace/output/OpenRenderFix.utx          
+        shell: bash
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'OpenRenderFix-release'
+          path: 'workspace/output/*'
+  compile-openrenderfix-debug:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sed -i 's/debugMode\s*=\s*[a-zA-Z]\+/debugMode = true/' OpenRVS/classes/OpenLogger.uc
+        shell: bash  
+      - uses: danpowell88/ravenshield-sdk@master
+        with:
+          projectName: 'OpenRenderFix'
+          projectPath: './OpenRenderFix'
+          strip: 'true'
+          sdkVersion: ${{ inputs.sdkVersion }}
+      - run: mv workspace/output/OpenRenderFix.u workspace/output/OpenRenderFix-Debug.utx
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'OpenRenderFix-debug'
+          path: 'workspace/output/*'
+
+# TODO: allow specifying workspace path to the sdk          
